@@ -14,6 +14,21 @@ The application consists of:
 - Cypher queries for graph traversal and recommendations
 
 ---
+### Live Application
+
+**Frontend:**
+
+https://YOUR-FRONTEND-URL.onrender.com
+
+**Backend:**
+
+https://cognodb-backend.onrender.com
+
+**Recommendation API:**
+
+https://cognodb-backend.onrender.com/api/recommendations/U001
+
+---
 
 ## 2. Why CognoDB / Graph Database?
 
