@@ -6,15 +6,12 @@ function App() {
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-
     const [userId, setUserId] = useState("U001");
 
-    // Filter jobs based on search text
     const filteredJobs = recommendations.filter((job) =>
         job.jobTitle.toLowerCase().includes(search.toLowerCase())
     );
 
-    // Load recommendations
     useEffect(() => {
         async function loadRecommendations() {
             setLoading(true);
@@ -22,9 +19,14 @@ function App() {
 
             try {
                 const data = await getRecommendations(userId);
-                setRecommendations(data.recommendations);
+
+                if (data.success) {
+                    setRecommendations(data.recommendations);
+                } else {
+                    setError("Unable to load job recommendations.");
+                }
             } catch (error) {
-                console.error(error);
+                console.error("Frontend error:", error);
                 setError("Unable to load job recommendations.");
             } finally {
                 setLoading(false);
@@ -77,7 +79,6 @@ function App() {
                     />
                 </section>
 
-                {/* Title */}
                 <h2 style={styles.title}>
                     Recommended Jobs
                 </h2>
@@ -96,51 +97,34 @@ function App() {
                     </p>
                 )}
 
-                {/* No recommendations */}
+                {/* No jobs */}
                 {!loading &&
                     !error &&
-                    recommendations.length === 0 && (
+                    filteredJobs.length === 0 && (
                         <p style={styles.message}>
                             No job recommendations found.
                         </p>
                     )}
 
-                {/* No search results */}
-                {!loading &&
-                    !error &&
-                    recommendations.length > 0 &&
-                    filteredJobs.length === 0 && (
-                        <p style={styles.message}>
-                            No jobs found for "{search}".
-                        </p>
-                    )}
-
-                {/* Job Cards */}
+                {/* Jobs */}
                 <div style={styles.jobsGrid}>
                     {filteredJobs.map((job) => (
                         <div
                             key={job.jobId}
                             style={styles.card}
                         >
+                            <h3>{job.jobTitle}</h3>
 
-                            {/* Job Title */}
-                            <h3 style={styles.jobTitle}>
-                                {job.jobTitle}
-                            </h3>
-
-                            {/* Salary */}
                             <p>
                                 <strong>💰 Salary:</strong>{" "}
                                 {job.salary}
                             </p>
 
-                            {/* Experience */}
                             <p>
                                 <strong>👤 Experience:</strong>{" "}
                                 {job.experience}
                             </p>
 
-                            {/* Matching Skills */}
                             <p>
                                 <strong>⭐ Matching Skills:</strong>
                             </p>
@@ -156,23 +140,19 @@ function App() {
                                 ))}
                             </div>
 
-                            {/* Match Count */}
                             <div style={styles.match}>
-                                🎯 Match: {job.matchCount} skill
+                                Match: {job.matchCount} skill
                                 {job.matchCount !== 1 ? "s" : ""}
                             </div>
-
                         </div>
                     ))}
                 </div>
-
             </main>
         </div>
     );
 }
 
 const styles = {
-
     page: {
         minHeight: "100vh",
         backgroundColor: "#f4f7fb",
@@ -195,10 +175,11 @@ const styles = {
 
     userBox: {
         backgroundColor: "white",
-        padding: "25px",
+        padding: "20px",
         borderRadius: "12px",
         marginBottom: "20px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
+        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+        textAlign: "center"
     },
 
     label: {
@@ -214,6 +195,7 @@ const styles = {
         border: "1px solid #ccc",
         fontSize: "16px",
         marginBottom: "15px",
+        color: "#111827",
         backgroundColor: "white"
     },
 
@@ -221,18 +203,17 @@ const styles = {
         backgroundColor: "white",
         padding: "20px",
         borderRadius: "12px",
-        marginBottom: "25px",
+        marginBottom: "30px",
         boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
     },
 
     searchInput: {
         width: "100%",
-        padding: "12px 15px",
+        boxSizing: "border-box",
+        padding: "12px",
         borderRadius: "8px",
         border: "1px solid #ccc",
-        fontSize: "16px",
-        boxSizing: "border-box",
-        outline: "none"
+        fontSize: "16px"
     },
 
     title: {
@@ -250,13 +231,7 @@ const styles = {
         backgroundColor: "white",
         padding: "22px",
         borderRadius: "12px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-        transition: "transform 0.2s ease"
-    },
-
-    jobTitle: {
-        fontSize: "20px",
-        marginBottom: "18px"
+        boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
     },
 
     skills: {
@@ -268,29 +243,25 @@ const styles = {
 
     skill: {
         backgroundColor: "#e0e7ff",
-        padding: "6px 12px",
+        padding: "6px 10px",
         borderRadius: "20px",
         fontSize: "14px"
     },
 
     match: {
         fontWeight: "bold",
-        marginTop: "10px",
-        paddingTop: "10px",
-        borderTop: "1px solid #eee"
+        marginTop: "10px"
     },
 
     message: {
         textAlign: "center",
-        padding: "30px",
-        fontSize: "18px"
+        padding: "30px"
     },
 
     error: {
         textAlign: "center",
         padding: "20px",
-        color: "red",
-        fontSize: "18px"
+        color: "red"
     }
 };
 
